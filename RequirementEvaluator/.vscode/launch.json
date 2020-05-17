@@ -1,0 +1,20 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Python: Evaluator",
+      "type": "python",
+      "request": "launch",
+      "program": "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\ProductSamplingFramework\\ExternPath\\Evaluator\\reqirementEvaluator.py",
+      "console": "integratedTerminal",
+      "args": [
+        // "--in",
+        // "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\ProductSamplingFramework\\ExternPath\\Evaluator\\input",
+        "--mode",
+        "simple",
+        "-out",
+        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\ProductSamplingFramework\\ExternPath\\Evaluator\\resultTable.csv"
+      ]
+    }
+  ]
+}
