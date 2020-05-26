@@ -5,15 +5,17 @@
       "name": "Python: Evaluator",
       "type": "python",
       "request": "launch",
-      "program": "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\ProductSamplingFramework\\ExternPath\\Evaluator\\reqirementEvaluator.py",
+      "program": "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterarbeit-Data\\RequirementEvaluator\\reqirementEvaluator.py",
       "console": "integratedTerminal",
       "args": [
-        // "--in",
-        // "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\ProductSamplingFramework\\ExternPath\\Evaluator\\input",
+        "--in",
+        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterarbeit-Data\\History\\BusyBox\\Results\\FrameworkResults",
         "--mode",
-        "simple",
+        "all",
         "-out",
-        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\ProductSamplingFramework\\ExternPath\\Evaluator\\resultTable.csv"
+        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterarbeit-Data\\History\\BusyBox\\Results\\EvaluatorResults\\results.csv",
+        "--size",
+        "3"
       ]
     }
   ]

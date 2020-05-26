@@ -1,0 +1,11 @@
+Author;AlgorithmID;ModelID;ModelName;Model_Features;Model_Constraints;SystemIteration;AlgorithmIteration;Timeout;InTime;NoError;Time;Size;T-Value;Validity;Valid Conditions;Coverage;ROIC;MSOC;FIMD;ICST;Runtime;Throughput;TotalCreatedBytes;TotalPauseTime;AveragePauseTime
+Joshua Sprey;Incling_t2;0;Car;17;50;1;1;86400000;true;true;343;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;2;1;86400000;true;true;304;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;3;1;86400000;true;true;317;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;4;1;86400000;true;true;286;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;5;1;86400000;true;true;312;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;6;1;86400000;true;true;319;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;7;1;86400000;true;true;288;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;8;1;86400000;true;true;288;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;9;1;86400000;true;true;312;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1
+Joshua Sprey;Incling_t2;0;Car;17;50;10;1;86400000;true;true;289;6;2;1.0;101;1.0;-1;-1;-1;-1;-1;-1;-1;-1;-1

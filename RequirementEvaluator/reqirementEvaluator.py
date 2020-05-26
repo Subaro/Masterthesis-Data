@@ -12,7 +12,7 @@ import glob
 parser = argparse.ArgumentParser(prog="reqEval",description='Process arguments...')
 parser.add_argument('--mode', 
                     type=str,
-                    choices=["simple", "weighranked", "inverseranked", "individual", all], 
+                    choices=["simple", "weighranked", "inverseranked", "individual", "all"], 
                     dest="mode", 
                     help='current mode to calculate score')
 parser.add_argument('--in', 
@@ -55,9 +55,9 @@ print("Starting evaluator with following priorities: (Size: " + str(sampleSize) 
 def saveData(output, data, mode, printPrios):
     path = args.output[:-4]
     if printPrios:
-        samplingData.saveDataList(path + "_general_(" + sampleSize + "," + sampleTime + "," + sampleCoverage + "," + sampleSimilarity + ")" + ".csv", data)
+        samplingData.saveDataList(path + "_"+mode+"_(" + str(sampleSize) + "," + str(sampleTime) + "," + str(sampleCoverage) + "," + str(sampleSimilarity) + ")" + ".csv", data)
     else:
-        samplingData.saveDataList(path + "_general" + ".csv", data)
+        samplingData.saveDataList(path + "_"+mode+".csv", data)
     
 # Read input and create sampling data from given input run (overrides old run)
 if args.input is not None:
@@ -93,13 +93,13 @@ if args.output is not None and args.mode is not None:
     elif args.mode == "all":
         # simple
         participantsDataList = samplingData.calculate_Simple(participantsDataList, sampleSize, sampleTime, sampleCoverage, sampleSimilarity)
-        saveData(args.output, participantsDataList, args.mode, True)
+        saveData(args.output, participantsDataList, "simple", True)
         # weightranked
         participantsDataList = samplingData.calculate_WeightRanked(participantsDataList, sampleSize, sampleTime, sampleCoverage, sampleSimilarity)
-        saveData(args.output, participantsDataList, args.mode, True)
+        saveData(args.output, participantsDataList, "weighranked", True)
         # inverseranked
         participantsDataList = samplingData.calculate_ReverseRanked(participantsDataList, sampleSize, sampleTime, sampleCoverage, sampleSimilarity)
-        saveData(args.output, participantsDataList, args.mode, True)
+        saveData(args.output, participantsDataList, "inverseranked", True)
         # individual
         participantsDataList = samplingData.calculate_Individual(participantsDataList, sampleSize, sampleTime, sampleCoverage, sampleSimilarity)
-        saveData(args.output, participantsDataList, args.mode, True)
+        saveData(args.output, participantsDataList, "individual", True)
