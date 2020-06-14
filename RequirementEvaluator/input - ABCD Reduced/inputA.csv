@@ -1,0 +1,4 @@
+Author;AlgorithmID;ModelID;ModelName;Model_Features;Model_Constraints;SystemIteration;AlgorithmIteration;Timeout;InTime;NoError;Time;Size;T-Value;Validity;Valid Conditions;Coverage;ROIC;MSOC;FIMD;ICST;Runtime;Throughput;TotalCreatedBytes;TotalPauseTime;AveragePauseTime
+Jingle Bells;A;0;BusyBox_2007-05-20_17-12-43;439;1342;1;1;3600000;true;true;110698;36;2;1;590033;1;-1;-1;-1;-1;61.84468;98.89206;26777;0.6852;0.02141
+Jingle Bells;A;1;BusyBox_2007-06-01_14-40-03;439;1342;1;1;3600000;true;true;110698;36;2;1;590033;1;1;1;0.75;1;58.47255;98.91367;26572;0.6352;0.01925
+Jingle Bells;A;2;BusyBox_2007-07-01_14-53-06;454;1389;1;1;3600000;true;true;110698;36;2;1;590033;1;0.03125;0.65521;0.75;0.74858;63.3428;98.889;28949;0.70374;0.01804
