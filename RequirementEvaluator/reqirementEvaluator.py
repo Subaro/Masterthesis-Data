@@ -99,6 +99,8 @@ def getPrioritization(arguments):
 
 class RequirementEvaluator:
     ''' The graphical class of our requirements evaluator. '''
+    # plot markers
+    markers = ('x', '+', '*', 'd', '1', '2', '3', '4')
     # UI Variables
     master = None
     frame = Frame
@@ -108,7 +110,8 @@ class RequirementEvaluator:
     labelPlotName = Text
     plotFrame = Frame
     grayscaleMode, logarithmicMode, gridMode = IntVar, IntVar, IntVar
-    xSpace, ySpace = DoubleVar, DoubleVar
+    varWidth, varHeight, varDPI, varLeft, varTop, varBottom, varRight, varXSpace, varYSpace = DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar
+    overrideWidthHeight, overrideLeftRight, overrideTopBottom, overrideSpace = IntVar, IntVar, IntVar, IntVar
     # Data Variables
     samplingFrame = sd.SamplingFrame
     args = None
@@ -163,72 +166,168 @@ class RequirementEvaluator:
                 self.samplingFrame.computeScores(
                     os.path.join(self.args.output, "scores"), self.plotListEntries)
 
-            jet = plt.get_cmap('jet')
+            jet = plt.get_cmap('Dark2')
             if self.isGrayscale():
-                jet = plt.get_cmap('Greys')
+                jet = plt.get_cmap('gray')
 
-            cNorm = colors.Normalize(vmin=0, vmax=4)
+            cNorm = colors.Normalize(vmin=0, vmax=6)
             scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=jet)
             scalarMap.get_clim()
 
             # Boxplot when only one priority
+            figure1 = None
             if boxPlot:
                 # Create Boxplots
-                figure1 = plt.Figure(figsize=(20, 5), dpi=100)
+                if(self.overrideWidthHeight.get() == 1):
+                    figure1 = plt.Figure(
+                        figsize=(int(self.varWidth.get()), int(self.varHeight.get())), dpi=int(self.varDPI.get()))
+                else:
+                    self.varWidth.set(20)
+                    self.varHeight.set(5)
+                    self.varDPI.set(100)
+                    figure1 = plt.Figure(figsize=(20, 5), dpi=100)
                 self.plot_createBarPlot("NBS (highest-best)", figure1, 141, self.samplingFrame.getAverageData(
-                ), 'Algorithm', True, 'Prioritization', 'NBS', scalarMap)
+                ), 'Algorithm', 'Prioritization', 'NBS', scalarMap)
                 self.plot_createBarPlot("SRBS (lowest-best)", figure1, 142, self.samplingFrame.getAverageData(
-                ), 'Algorithm', True, 'Prioritization', 'SRBS', scalarMap)
+                ), 'Algorithm', 'Prioritization', 'SRBS', scalarMap)
                 self.plot_createBarPlot("WRBS (lowest-best)", figure1, 143, self.samplingFrame.getAverageData(
-                ), 'Algorithm', True, 'Prioritization', 'WRBS', scalarMap)
+                ), 'Algorithm', 'Prioritization', 'WRBS', scalarMap)
                 self.plot_createBarPlot("IWRBS (highest-best)", figure1, 144, self.samplingFrame.getAverageData(
-                ), 'Algorithm', True, 'Prioritization', 'IWRBS', scalarMap)
-
-                figure1.autofmt_xdate(rotation=70)
-                figure1.subplots_adjust(
-                    bottom=0.25, top=0.9, left=0.1, right=0.99)
-
-                if(self.isYSpace()):
-                    figure1.subplots_adjust(hspace=float(self.ySpace.get()))
-                if(self.isXSpace()):
-                    figure1.subplots_adjust(wspace=float(self.xSpace.get()))
-
-                # Export
-                if self.isExporting():
-                    figure1.savefig(self.plot_getPlotExportPath(".pdf"))
+                ), 'Algorithm', 'Prioritization', 'IWRBS', scalarMap)
 
                 bar = FigureCanvasTkAgg(figure1, self.plotFrame)
                 bar.draw()
                 bar.get_tk_widget().pack()
             else:
                 # Create scatter
-                figure1 = plt.Figure(figsize=(20, 6), dpi=100)
+                if(self.overrideWidthHeight.get() == 1):
+                    figure1 = plt.Figure(
+                        figsize=(int(self.varWidth.get()), int(self.varHeight.get())), dpi=int(self.varDPI.get()))
+                else:
+                    self.varWidth.set(20)
+                    self.varHeight.set(6)
+                    self.varDPI.set(100)
+                    figure1 = plt.Figure(figsize=(20, 6), dpi=100)
                 self.plot_createPlot("NBS (highest-best)", figure1, 141, self.samplingFrame.getAverageData(
-                ), 'Algorithm', True, 'Prioritization', 'NBS', scalarMap)
+                ), 'Algorithm', 'Prioritization', 'NBS', scalarMap)
                 self.plot_createPlot("SRBS (lowest-best)", figure1, 142, self.samplingFrame.getAverageData(
-                ), 'Algorithm', True, 'Prioritization', 'SRBS', scalarMap)
+                ), 'Algorithm', 'Prioritization', 'SRBS', scalarMap)
                 self.plot_createPlot("WRBS (lowest-best)", figure1, 143, self.samplingFrame.getAverageData(
-                ), 'Algorithm', True, 'Prioritization', 'WRBS', scalarMap)
+                ), 'Algorithm', 'Prioritization', 'WRBS', scalarMap)
                 self.plot_createPlot("IWRBS (highest-best)", figure1, 144, self.samplingFrame.getAverageData(
-                ), 'Algorithm', True, 'Prioritization', 'IWRBS', scalarMap)
+                ), 'Algorithm', 'Prioritization', 'IWRBS', scalarMap)
 
                 figure1.autofmt_xdate(rotation=70)
-                figure1.subplots_adjust(
-                    bottom=0.4, top=0.93, left=0.05, right=0.95)
 
-                if(self.isYSpace()):
-                    figure1.subplots_adjust(hspace=float(self.ySpace.get()))
-                if(self.isXSpace()):
-                    figure1.subplots_adjust(wspace=float(self.xSpace.get()))
+                if(self.overrideLeftRight.get() == 1):
+                    figure1.subplots_adjust(left=float(
+                        self.varLeft.get()), right=float(self.varRight.get()))
+                else:
+                    self.varLeft.set(0.15)
+                    self.varRight.set(0.99)
+                    figure1.subplots_adjust(left=float(
+                        self.varLeft.get()), right=float(self.varRight.get()))
 
-                # Export
-                if self.isExporting():
-                    figure1.savefig(self.plot_getPlotExportPath(".pdf"))
+                if(self.overrideTopBottom.get() == 1):
+                    figure1.subplots_adjust(top=float(
+                        self.varTop.get()), bottom=float(self.varBottom.get()))
+                else:
+                    self.varTop.set(0.9)
+                    self.varBottom.set(0.25)
+                    figure1.subplots_adjust(top=float(
+                        self.varTop.get()), bottom=float(self.varBottom.get()))
+
+                if(self.overrideSpace.get() == 1):
+                    figure1.subplots_adjust(wspace=float(
+                        self.varXSpace.get()), hspace=float(self.varYSpace.get()))
+                else:
+                    self.varXSpace.set(0.1)
+                    self.varYSpace.set(0.1)
+                    figure1.subplots_adjust(wspace=float(
+                        self.varXSpace.get()), hspace=float(self.varYSpace.get()))
 
                 # Show in UI
                 scatter = FigureCanvasTkAgg(figure1, self.plotFrame)
                 scatter.draw()
                 scatter.get_tk_widget().pack()
+
+            # Export
+            if self.isExporting():
+                figure1.savefig(self.plot_getPlotExportPath(".pdf"))
+
+    def plot_plotComparison(self, title, xtitle, xaxis, ytitle, yaxis):
+        ''' Plots all lists. '''
+        # Remove all old plots
+        self.plot_removePlots()
+
+        # Check if data is available
+        if self.samplingFrame.data is None or len(self.samplingFrame.data) == 0:
+            # Case: No data available inform user
+            Label(self.plotFrame, text="No data loaded to plot!").pack()
+        else:
+            jet = plt.get_cmap('Dark2')
+            if self.isGrayscale():
+                jet = plt.get_cmap('gray')
+
+            cNorm = colors.Normalize(vmin=0, vmax=6)
+            scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=jet)
+            scalarMap.get_clim()
+
+            # Create scatter
+            figure1 = None
+            if(self.overrideWidthHeight.get() == 1):
+                figure1 = plt.Figure(
+                    figsize=(int(self.varWidth.get()), int(self.varHeight.get())), dpi=int(self.varDPI.get()))
+            else:
+                self.varWidth.set(7)
+                self.varHeight.set(6)
+                self.varDPI.set(100)
+                figure1 = plt.Figure(figsize=(7, 6), dpi=100)
+
+            plot = self.plot_createComparePlot(title, figure1, 111, self.samplingFrame.getData(
+            ), 'Algorithm', xaxis, yaxis, scalarMap)
+            plot.set_xlabel(xtitle)
+            if self.isLogarithmicMode():
+                plot.set_ylabel(ytitle + ' in logarithmic scale')
+            else:
+                plot.set_ylabel(ytitle)
+
+            figure1.autofmt_xdate(rotation=70)
+            if(self.overrideLeftRight.get() == 1):
+                figure1.subplots_adjust(left=float(
+                    self.varLeft.get()), right=float(self.varRight.get()))
+            else:
+                self.varLeft.set(0.15)
+                self.varRight.set(0.99)
+                figure1.subplots_adjust(left=float(
+                    self.varLeft.get()), right=float(self.varRight.get()))
+
+            if(self.overrideTopBottom.get() == 1):
+                figure1.subplots_adjust(top=float(
+                    self.varTop.get()), bottom=float(self.varBottom.get()))
+            else:
+                self.varTop.set(0.9)
+                self.varBottom.set(0.13)
+                figure1.subplots_adjust(top=float(
+                    self.varTop.get()), bottom=float(self.varBottom.get()))
+
+            if(self.overrideSpace.get() == 1):
+                figure1.subplots_adjust(wspace=float(
+                    self.varXSpace.get()), hspace=float(self.varYSpace.get()))
+            else:
+                self.varXSpace.set(0.1)
+                self.varYSpace.set(0.1)
+                figure1.subplots_adjust(wspace=float(
+                    self.varXSpace.get()), hspace=float(self.varYSpace.get()))
+
+            # Export
+            if self.isExporting():
+                figure1.savefig(self.plot_getPlotExportPath(".pdf"))
+
+            # Show in UI
+            scatter = FigureCanvasTkAgg(figure1, self.plotFrame)
+            scatter.draw()
+            scatter.get_tk_widget().pack()
 
     def plot_plotRangeInternal(self, priorityList, variable):
         # Remove all old plots
@@ -254,38 +353,34 @@ class RequirementEvaluator:
             self.samplingFrame.computeScores(
                 os.path.join(self.args.output, "scores"), priorityList)
 
-        jet = plt.get_cmap('jet')
+        jet = plt.get_cmap('Dark2')
         if self.isGrayscale():
-            jet = plt.get_cmap('Greys')
+            jet = plt.get_cmap('gray')
 
-        cNorm = colors.Normalize(vmin=0, vmax=4)
+        cNorm = colors.Normalize(vmin=0, vmax=6)
         scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=jet)
         scalarMap.get_clim()
 
+        figure1 = None
         if boxPlot:
             # Create Boxplots
-            figure1 = plt.Figure(figsize=(20, 5), dpi=100)
+            if(self.overrideWidthHeight.get() == 1):
+                figure1 = plt.Figure(
+                    figsize=(int(self.varWidth.get()), int(self.varHeight.get())), dpi=int(self.varDPI.get()))
+            else:
+                self.varWidth.set(20)
+                self.varHeight.set(5)
+                self.varDPI.set(100)
+                figure1 = plt.Figure(figsize=(20, 5), dpi=100)
+
             self.plot_createBarPlot("NBS (highest-best)", figure1, 141, self.samplingFrame.getAverageData(
-            ), 'Algorithm', True, 'Prioritization', 'NBS', scalarMap)
+            ), 'Algorithm', 'Prioritization', 'NBS', scalarMap)
             self.plot_createBarPlot("SRBS (lowest-best)", figure1, 142, self.samplingFrame.getAverageData(
-            ), 'Algorithm', True, 'Prioritization', 'SRBS', scalarMap)
+            ), 'Algorithm', 'Prioritization', 'SRBS', scalarMap)
             self.plot_createBarPlot("WRBS (lowest-best)", figure1, 143, self.samplingFrame.getAverageData(
-            ), 'Algorithm', True, 'Prioritization', 'WRBS', scalarMap)
+            ), 'Algorithm', 'Prioritization', 'WRBS', scalarMap)
             self.plot_createBarPlot("IWRBS (highest-best)", figure1, 144, self.samplingFrame.getAverageData(
-            ), 'Algorithm', True, 'Prioritization', 'IWRBS', scalarMap)
-
-            figure1.autofmt_xdate(rotation=70)
-            figure1.subplots_adjust(
-                bottom=0.25, top=0.9, left=0.1, right=0.99)
-
-            if(self.isYSpace()):
-                figure1.subplots_adjust(hspace=float(self.ySpace.get()))
-            if(self.isXSpace()):
-                figure1.subplots_adjust(wspace=float(self.xSpace.get()))
-
-            # Export
-            if self.isExporting():
-                figure1.savefig(self.plot_getPlotExportPath(".pdf"))
+            ), 'Algorithm', 'Prioritization', 'IWRBS', scalarMap)
 
             bar = FigureCanvasTkAgg(figure1, self.plotFrame)
             bar.draw()
@@ -317,44 +412,71 @@ class RequirementEvaluator:
                     ticks.append(prio.memory)
 
             # Create scatter
-            figure1 = plt.Figure(figsize=(20, 4), dpi=100)
+            if(self.overrideWidthHeight.get() == 1):
+                figure1 = plt.Figure(
+                    figsize=(int(self.varWidth.get()), int(self.varHeight.get())), dpi=int(self.varDPI.get()))
+            else:
+                self.varWidth.set(20)
+                self.varHeight.set(4)
+                self.varDPI.set(100)
+                figure1 = plt.Figure(figsize=(20, 4), dpi=100)
+
             subplot = self.plot_createPlot("NBS (highest-best)", figure1, 141, self.samplingFrame.getAverageData(
-            ), 'Algorithm', True, 'Prioritization', 'NBS', scalarMap)
+            ), 'Algorithm', 'Prioritization', 'NBS', scalarMap)
             subplot.set_xlabel(title)
             subplot.xaxis.set(ticks=range(0, len(priorityList)),
                               ticklabels=ticks)
             subplot = self.plot_createPlot("SRBS (lowest-best)", figure1, 142, self.samplingFrame.getAverageData(
-            ), 'Algorithm', True, 'Prioritization', 'SRBS', scalarMap)
+            ), 'Algorithm', 'Prioritization', 'SRBS', scalarMap)
             subplot.set_xlabel(title)
             subplot.xaxis.set(ticks=range(0, len(priorityList)),
                               ticklabels=ticks)
             subplot = self.plot_createPlot("WRBS (lowest-best)", figure1, 143, self.samplingFrame.getAverageData(
-            ), 'Algorithm', True, 'Prioritization', 'WRBS', scalarMap)
+            ), 'Algorithm', 'Prioritization', 'WRBS', scalarMap)
             subplot.set_xlabel(title)
             subplot.xaxis.set(ticks=range(0, len(priorityList)),
                               ticklabels=ticks)
             subplot = self.plot_createPlot("IWRBS (highest-best)", figure1, 144, self.samplingFrame.getAverageData(
-            ), 'Algorithm', True, 'Prioritization', 'IWRBS', scalarMap)
+            ), 'Algorithm', 'Prioritization', 'IWRBS', scalarMap)
             subplot.set_xlabel(title)
             subplot.xaxis.set(ticks=range(0, len(priorityList)),
                               ticklabels=ticks)
 
-            # Export
-            if self.isExporting():
-                figure1.savefig(self.plot_getPlotExportPath(".pdf"))
+            if(self.overrideLeftRight.get() == 1):
+                figure1.subplots_adjust(left=float(
+                    self.varLeft.get()), right=float(self.varRight.get()))
+            else:
+                self.varLeft.set(0.15)
+                self.varRight.set(0.99)
+                figure1.subplots_adjust(left=float(
+                    self.varLeft.get()), right=float(self.varRight.get()))
 
-            figure1.subplots_adjust(
-                bottom=0.15, top=0.93, left=0.05, right=0.95)
+            if(self.overrideTopBottom.get() == 1):
+                figure1.subplots_adjust(top=float(
+                    self.varTop.get()), bottom=float(self.varBottom.get()))
+            else:
+                self.varTop.set(0.9)
+                self.varBottom.set(0.25)
+                figure1.subplots_adjust(top=float(
+                    self.varTop.get()), bottom=float(self.varBottom.get()))
 
-            if(self.isYSpace()):
-                figure1.subplots_adjust(hspace=float(self.ySpace.get()))
-            if(self.isXSpace()):
-                figure1.subplots_adjust(wspace=float(self.xSpace.get()))
+            if(self.overrideSpace.get() == 1):
+                figure1.subplots_adjust(wspace=float(
+                    self.varXSpace.get()), hspace=float(self.varYSpace.get()))
+            else:
+                self.varXSpace.set(0.1)
+                self.varYSpace.set(0.1)
+                figure1.subplots_adjust(wspace=float(
+                    self.varXSpace.get()), hspace=float(self.varYSpace.get()))
 
             # Show in UI
             scatter1 = FigureCanvasTkAgg(figure1, self.plotFrame)
             scatter1.draw()
             scatter1.get_tk_widget().pack()
+
+        # Export
+        if self.isExporting():
+            figure1.savefig(self.plot_getPlotExportPath(".pdf"))
 
     def plot_plotRangeSize(self):
         ''' Plots all lists. '''
@@ -461,7 +583,7 @@ class RequirementEvaluator:
         except TclError:
             pass
 
-    def plot_createPlot(self, title, figure, subplotID, dataFrame, filterUnqiue, filterMask, xaxis, yaxis, scalarMap):
+    def plot_createPlot(self, title, figure, subplotID, dataFrame, filterUnqiue, xaxis, yaxis, scalarMap):
         ''' Creates a plot that shows the given data '''
         # Create subplot
         plot = figure.add_subplot(subplotID)
@@ -469,12 +591,12 @@ class RequirementEvaluator:
         # Extract list of uniques
         uniques = dataFrame[filterUnqiue].unique()
 
-        colorIndex = 1
+        colorIndex = 0
         for unique in uniques:
             # Create filtered data
             filteredData = dataFrame[(dataFrame[filterUnqiue] == unique)]
             plot.scatter(filteredData[xaxis],
-                         filteredData[yaxis], marker="x", color=scalarMap.to_rgba(colorIndex))
+                         filteredData[yaxis], marker=self.markers[colorIndex], s=45, color=scalarMap.to_rgba(colorIndex))
             colorIndex = colorIndex + 1
 
         if self.isLogarithmicMode():
@@ -491,7 +613,7 @@ class RequirementEvaluator:
         plot.set_title(title)
         return plot
 
-    def plot_createBarPlot(self, title, figure, subplotID, dataFrame, filterUnqiue, filterMask, xaxis, yaxis, scalarMap):
+    def plot_createComparePlot(self, title, figure, subplotID, dataFrame, filterUnqiue, xaxis, yaxis, scalarMap):
         ''' Creates a plot that shows the given data '''
         # Create subplot
         plot = figure.add_subplot(subplotID)
@@ -499,7 +621,38 @@ class RequirementEvaluator:
         # Extract list of uniques
         uniques = dataFrame[filterUnqiue].unique()
 
-        colorIndex = 1
+        colorIndex = 0
+        for unique in uniques:
+            # Create filtered data
+            filteredData = dataFrame[(dataFrame[filterUnqiue] == unique)]
+            filteredData = filteredData[filteredData[yaxis] >= 0]
+            plot.scatter(filteredData[xaxis],
+                         filteredData[yaxis], marker=self.markers[colorIndex], s=45, color=scalarMap.to_rgba(colorIndex))
+            colorIndex = colorIndex + 1
+
+        if self.isLogarithmicMode():
+            plot.set_yscale('log')
+            plot.set_ylabel('logarithmic scale')
+        if self.isGridMode():
+            plot.grid()
+
+        plot.tick_params(axis='y',
+                         direction='inout',
+                         length=10)
+        plot.legend(uniques)
+        plot.set_xlabel(xaxis)
+        plot.set_title(title)
+        return plot
+
+    def plot_createBarPlot(self, title, figure, subplotID, dataFrame, filterUnqiue, xaxis, yaxis, scalarMap):
+        ''' Creates a plot that shows the given data '''
+        # Create subplot
+        plot = figure.add_subplot(subplotID)
+
+        # Extract list of uniques
+        uniques = dataFrame[filterUnqiue].unique()
+
+        colorIndex = 0
         for unique in uniques:
             filteredData = dataFrame[(
                 dataFrame[filterUnqiue] == unique)][yaxis]
@@ -514,13 +667,43 @@ class RequirementEvaluator:
         if self.isGridMode():
             plot.grid()
 
-        plot.xaxis.set(ticks=range(1, len(uniques)+1),
+        plot.xaxis.set(ticks=range(0, len(uniques)),
                        ticklabels=uniques)
         plot.tick_params(axis='y',
                          direction='inout',
                          length=10)
         plot.set_title(title + "\n" + str(dataFrame[xaxis].values.tolist()[0]))
         plot.legend(uniques)
+
+        figure.autofmt_xdate(rotation=70)
+
+        if(self.overrideLeftRight.get() == 1):
+            figure.subplots_adjust(left=float(
+                self.varLeft.get()), right=float(self.varRight.get()))
+        else:
+            self.varLeft.set(0.07)
+            self.varRight.set(0.99)
+            figure.subplots_adjust(left=float(
+                self.varLeft.get()), right=float(self.varRight.get()))
+
+        if(self.overrideTopBottom.get() == 1):
+            figure.subplots_adjust(top=float(
+                self.varTop.get()), bottom=float(self.varBottom.get()))
+        else:
+            self.varTop.set(0.9)
+            self.varBottom.set(0.22)
+            figure.subplots_adjust(top=float(
+                self.varTop.get()), bottom=float(self.varBottom.get()))
+
+        if(self.overrideSpace.get() == 1):
+            figure.subplots_adjust(wspace=float(
+                self.varXSpace.get()), hspace=float(self.varYSpace.get()))
+        else:
+            self.varXSpace.set(0.22)
+            self.varYSpace.set(0.1)
+            figure.subplots_adjust(wspace=float(
+                self.varXSpace.get()), hspace=float(self.varYSpace.get()))
+
         return plot
 
     def plot_removePlots(self):
@@ -551,14 +734,6 @@ class RequirementEvaluator:
 
     def isGridMode(self):
         return self.gridMode.get() == 1
-
-    def isYSpace(self):
-        if isinstance(self.ySpace.get(), float):
-            return self.ySpace.get() > 0 and self.ySpace.get() <= 1
-
-    def isXSpace(self):
-        if isinstance(self.xSpace.get(), float):
-            return self.xSpace.get() > 0 and self.xSpace.get() <= 1
 
     def data_importDataFromInputPath(self):
         ''' Import all data from the input path. '''
@@ -596,7 +771,7 @@ class RequirementEvaluator:
             # Update variable
             try:
                 self.samplePrioitization.size = self.sizeVar.get()
-            except TclError as t:
+            except TclError:
                 return
 
             print("Updated the size priority to: " +
@@ -610,7 +785,7 @@ class RequirementEvaluator:
             # Update variable
             try:
                 self.samplePrioitization.time = self.timeVar.get()
-            except TclError as t:
+            except TclError:
                 return
             print("Updated the time priority to: " +
                   str(self.samplePrioitization.time))
@@ -623,7 +798,7 @@ class RequirementEvaluator:
             # Update variable
             try:
                 self.samplePrioitization.coverage = self.coverageVar.get()
-            except TclError as t:
+            except TclError:
                 return
             print("Updated the coverage priority to: " +
                   str(self.samplePrioitization.coverage))
@@ -636,7 +811,7 @@ class RequirementEvaluator:
             # Update variable
             try:
                 self.samplePrioitization.similarity = self.similarityVar.get()
-            except TclError as t:
+            except TclError:
                 return
             print("Updated the similarity priority to: " +
                   str(self.samplePrioitization.similarity))
@@ -649,7 +824,7 @@ class RequirementEvaluator:
             # Update variable
             try:
                 self.samplePrioitization.memory = self.memoryVar.get()
-            except TclError as t:
+            except TclError:
                 return
             print("Updated the memory priority to: " +
                   str(self.samplePrioitization.memory))
@@ -681,11 +856,13 @@ class RequirementEvaluator:
 
         frameStyle = Style()
         frameStyle.configure("BW.TLabelFrame", foreground="red")
+        frameRow = 0
         # ----------------------------------------------------------------------------------------------------------------
         # Create frame for priorities
         # ----------------------------------------------------------------------------------------------------------------
         prioritiesFrame = LabelFrame(toolFrame, text="Prioritizations")
-        prioritiesFrame.grid(row=0, column=0, sticky="wens", pady=10, padx=10)
+        prioritiesFrame.grid(row=frameRow, column=0,
+                             sticky="wens", pady=10, padx=10)
 
         row = 0
 
@@ -810,42 +987,6 @@ class RequirementEvaluator:
         buttonClearList.grid(row=row, columnspan=5, sticky="we")
         row += 1
 
-        labelPlotNameLabel = Label(prioritiesFrame, text=("Plot Name:"))
-        labelPlotNameLabel.grid(row=row, column=0, sticky="w")
-        self.labelPlotName = Text(prioritiesFrame, height=1, width=20)
-        self.labelPlotName.grid(row=row, column=1, columnspan=4, sticky="we")
-        row += 1
-
-        self.grayscaleMode = IntVar()
-        grayscaleModeButton = Checkbutton(
-            prioritiesFrame, text="Grayscale Mode", variable=self.grayscaleMode)
-        grayscaleModeButton.grid(row=row, columnspan=5, sticky="wens")
-        row += 1
-
-        self.logarithmicMode = IntVar()
-        logarithmicModeButton = Checkbutton(
-            prioritiesFrame, text="Logarithmic Scale", variable=self.logarithmicMode)
-        logarithmicModeButton.grid(row=row, columnspan=5, sticky="wens")
-        row += 1
-
-        self.gridMode = IntVar()
-        gridModeButton = Checkbutton(
-            prioritiesFrame, text="Draw Grid", variable=self.gridMode)
-        gridModeButton.grid(row=row, columnspan=5, sticky="wens")
-        row += 1
-
-        self.xSpace = DoubleVar()
-        self.xSpace.set(0)
-        self.ySpace = DoubleVar()
-        self.ySpace.set(0)
-        Label(prioritiesFrame, text=("X/Y Space:")).\
-            grid(row=row, column=0, sticky="w")
-        Spinbox(prioritiesFrame, textvariable=self.xSpace).\
-            grid(row=row, column=1, columnspan=2, sticky="we")
-        Spinbox(prioritiesFrame, textvariable=self.ySpace).\
-            grid(row=row, column=3, columnspan=2, sticky="we")
-        row += 1
-
         buttonPlotPrio = Button(
             prioritiesFrame, text="Plot list", command=lambda: self.plot_plotList())
         buttonPlotPrio.grid(row=row, columnspan=5, sticky="wens")
@@ -855,12 +996,155 @@ class RequirementEvaluator:
             prioritiesFrame, text="Delete plot", command=self.plot_removePlots)
         buttonClearPlots.grid(row=row, columnspan=5, sticky="wens")
         row += 1
+        # ----------------------------------------------------------------------------------------------------------------
+        # Create frame for comparison self, title, xtitle, xaxis, ytitle, yaxis
+        # ----------------------------------------------------------------------------------------------------------------
+        frameRow += 1
+        comparisonFrame = LabelFrame(toolFrame, text="Comparison")
+        comparisonFrame.grid(row=frameRow, column=0,
+                             sticky="wens", pady=10, padx=10)
 
+        Button(comparisonFrame, text="Size", command=lambda: self.plot_plotComparison(
+            'Sample Size',
+            'number of features',
+            'System Features',
+            'size',
+            'Sample Size')).\
+            grid(row=row, column=0)
+        Button(comparisonFrame, text="Time", command=lambda: self.plot_plotComparison(
+            'Sample Time',
+            'number of features',
+            'System Features',
+            'time',
+            'Sample Time')).\
+            grid(row=row, column=1)
+        Button(comparisonFrame, text="Coverage", command=lambda: self.plot_plotComparison(
+            'Sample Coverage',
+            'number of features',
+            'System Features',
+            'coverage',
+            'Sample Coverage')).\
+            grid(row=row, column=2)
+        Button(comparisonFrame, text="Similarity", command=lambda: self.plot_plotComparison(
+            'Sample Similarity',
+            'number of features',
+            'System Features',
+            'similarity',
+            'Sample Similarity')).\
+            grid(row=row, column=3)
+        Button(comparisonFrame, text="Memory", command=lambda: self.plot_plotComparison(
+            'Sample Memory',
+            'number of features',
+            'System Features',
+            'consumed memory',
+            'Sample Memory')).\
+            grid(row=row, column=4)
+        # ----------------------------------------------------------------------------------------------------------------
+        # Create frame for plot options
+        # ----------------------------------------------------------------------------------------------------------------
+        frameRow += 1
+        plotOptionFrame = LabelFrame(toolFrame, text="Plot Options")
+        plotOptionFrame.grid(row=frameRow, column=0,
+                             sticky="wens", pady=10, padx=10)
+
+        row = 0
+        labelPlotNameLabel = Label(plotOptionFrame, text=("Plot Name:"))
+        labelPlotNameLabel.grid(row=row, column=0, sticky="w")
+        self.labelPlotName = Text(plotOptionFrame, height=1, width=20)
+        self.labelPlotName.grid(row=row, column=1, columnspan=4, sticky="we")
+        row += 1
+
+        self.grayscaleMode = IntVar()
+        grayscaleModeButton = Checkbutton(
+            plotOptionFrame, text="Grayscale Mode", variable=self.grayscaleMode)
+        grayscaleModeButton.grid(row=row, columnspan=4, sticky="wens")
+        row += 1
+
+        self.logarithmicMode = IntVar()
+        logarithmicModeButton = Checkbutton(
+            plotOptionFrame, text="Logarithmic Scale", variable=self.logarithmicMode)
+        logarithmicModeButton.grid(row=row, columnspan=4, sticky="wens")
+        row += 1
+
+        self.gridMode = IntVar()
+        gridModeButton = Checkbutton(
+            plotOptionFrame, text="Draw Grid", variable=self.gridMode)
+        gridModeButton.grid(row=row, columnspan=4, sticky="wens")
+        row += 1
+
+        # Figure Size
+        self.overrideWidthHeight = IntVar()
+        self.overrideWidthHeight.set(0)
+        self.varWidth = DoubleVar()
+        self.varWidth.set(0)
+        self.varHeight = DoubleVar()
+        self.varHeight.set(0)
+        self.varDPI = DoubleVar()
+        self.varDPI.set(0)
+        Checkbutton(
+            plotOptionFrame, text="Override Width/Height & DPI", variable=self.overrideWidthHeight).\
+            grid(row=row, column=0, sticky="w")
+        Spinbox(plotOptionFrame, textvariable=self.varWidth, width=10).\
+            grid(row=row, column=1)
+        Spinbox(plotOptionFrame, textvariable=self.varHeight, width=10).\
+            grid(row=row, column=2)
+        Spinbox(plotOptionFrame, textvariable=self.varDPI, width=10).\
+            grid(row=row, column=3)
+        row += 1
+
+        # Figure Top/bottom
+        self.overrideTopBottom = IntVar()
+        self.overrideTopBottom.set(0)
+        self.varTop = DoubleVar()
+        self.varTop.set(0)
+        self.varBottom = DoubleVar()
+        self.varBottom.set(0)
+        Checkbutton(
+            plotOptionFrame, text="Override Top/Bottom", variable=self.overrideTopBottom).\
+            grid(row=row, column=0, sticky="w")
+        Spinbox(plotOptionFrame, textvariable=self.varTop, width=10).\
+            grid(row=row, column=1)
+        Spinbox(plotOptionFrame, textvariable=self.varBottom, width=10).\
+            grid(row=row, column=2)
+        row += 1
+
+        # Figure Top/bottom
+        self.overrideLeftRight = IntVar()
+        self.overrideLeftRight.set(0)
+        self.varLeft = DoubleVar()
+        self.varLeft.set(0)
+        self.varRight = DoubleVar()
+        self.varRight.set(0)
+        Checkbutton(
+            plotOptionFrame, text="Override Left/Right", variable=self.overrideLeftRight).\
+            grid(row=row, column=0, sticky="w")
+        Spinbox(plotOptionFrame, textvariable=self.varLeft, width=10).\
+            grid(row=row, column=1)
+        Spinbox(plotOptionFrame, textvariable=self.varRight, width=10).\
+            grid(row=row, column=2)
+        row += 1
+
+        # Figure Top/bottom
+        self.overrideSpace = IntVar()
+        self.overrideSpace.set(0)
+        self.varXSpace = DoubleVar()
+        self.varXSpace.set(0)
+        self.varYSpace = DoubleVar()
+        self.varYSpace.set(0)
+        Checkbutton(
+            plotOptionFrame, text="Override X/Y Space", variable=self.overrideSpace).\
+            grid(row=row, column=0, sticky="w")
+        Spinbox(plotOptionFrame, textvariable=self.varXSpace, width=10).\
+            grid(row=row, column=1)
+        Spinbox(plotOptionFrame, textvariable=self.varYSpace, width=10).\
+            grid(row=row, column=2)
+        row += 1
         # ----------------------------------------------------------------------------------------------------------------
         # Create frame for data info (Pack Layout)
         # ----------------------------------------------------------------------------------------------------------------
+        frameRow += 1
         dataFrame = LabelFrame(toolFrame, text="Data Information")
-        dataFrame.grid(row=1, column=0, sticky="wens", pady=10, padx=10)
+        dataFrame.grid(row=frameRow, column=0, sticky="wens", pady=10, padx=10)
         labelDataStatus = Label(dataFrame, text="Status:")
         labelDataStatus.grid(row=0, column=0, sticky="w")
         style = Style()
@@ -882,8 +1166,10 @@ class RequirementEvaluator:
         # ----------------------------------------------------------------------------------------------------------------
         # Create frame for data import(Pack Layout)
         # ----------------------------------------------------------------------------------------------------------------
+        frameRow += 1
         importFrame = LabelFrame(toolFrame, text="Import")
-        importFrame.grid(row=2, column=0, sticky="wens", pady=10, padx=10)
+        importFrame.grid(row=frameRow, column=0,
+                         sticky="wens", pady=10, padx=10)
 
         # Handle import of data
         buttonCreateDataFromInputFolder = Button(
@@ -893,11 +1179,12 @@ class RequirementEvaluator:
         # ----------------------------------------------------------------------------------------------------------------
         # Create frame for data loading (Pack Layout)
         # ----------------------------------------------------------------------------------------------------------------
+        frameRow += 1
         pathFrames = LabelFrame(toolFrame, text="Paths")
-        pathFrames.grid(row=3, column=0, sticky="wens", pady=10, padx=10)
+        pathFrames.grid(row=frameRow, column=0,
+                        sticky="wens", pady=10, padx=10)
 
         # Handle loading of data
-
         buttonOpenInputFolder = Button(
             pathFrames, text="Open Input Folder", command=self.openInputFolder)
         buttonOpenInputFolder.pack(fill=X)

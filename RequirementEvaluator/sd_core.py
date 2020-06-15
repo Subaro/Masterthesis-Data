@@ -262,6 +262,8 @@ class SamplingFrame:
                     'Nom. Sample Time': 1 - (row['Time'] / row['Timeout']),
                     'Nom. Sample Memory': 1 - (row['TotalCreatedBytes'] / row['Valid Conditions']),
                     }
+            if data['Nom. Sample Memory'] < 0:
+                data['Nom. Sample Memory'] = 0
             self.data = self.data.append(pd.Series(data), ignore_index=True)
 
     # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
