@@ -1,0 +1,1 @@
+python requirementEvaluator.py --out $PfadZumAusgabeOrdner --in $PfadZumGroundTruth --tiraInput $PfadZumEvaluierendenLauf

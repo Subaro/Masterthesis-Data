@@ -1,0 +1,21 @@
+Als erstes kam:
+[6] The AETG System: An Approach to Testing Based on Combinatorial Design
+Generiert Testfälle für Konfigurationsparametern in das AETG System
+
+Dann:
+[23] Interaction Testing of Highly-configurable Systems in the Presence of Constraints 
+Wende AETG Algorithmen auf Probleme mit Constraints an (CCIT) => CCIT-AETG
+
+Dann:
+[24] Exploiting Constraint Solving History to Construct Interaction Test Suites 
+Optimiert CCIT-AETG mit Reduzierung von CIT space
+
+Dann:
+Constructing Interaction Test Suites for Highly-Configurable Systems in the Presence of Constraints: A Greedy Approach 
+
+
+Summary
+[1997] AETG computes t-tests for models without constraints
+[23] AETG-SAT computes t-tests for models with constraints and incremental SAT solving (miniSAT)
+[24] AETG-History
+[CDS:TSE08] AETG-HT

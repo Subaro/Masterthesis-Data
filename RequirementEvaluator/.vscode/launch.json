@@ -2,28 +2,45 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Python: Evaluator",
+      "name": "Requirements Evaluator Console",
       "type": "python",
       "request": "launch",
-      "program": "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\reqirementEvaluator.py",
+      "program": "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\RequirementsEvaluator.py",
       "console": "integratedTerminal",
       "args": [
         "--in",
         "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\input",
-        // "--mode",
-        // "SRBS",
-        "-out",
+        "--out",
+        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\output"
+      ]
+    },
+    {
+      "name": "Requirements Evaluator TIRA",
+      "type": "python",
+      "request": "launch",
+      "program": "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\RequirementsEvaluator.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--in",
+        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\input",
+        "--out",
         "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\output",
-        "--size",
-        "1",
-        "--runtime",
-        "1",
-        "--coverage",
-        "1",
-        "--similarity",
-        "1",
-        "--memory",
-        "1"
+        "--tiraInput",
+        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\input - TIRA"
+      ]
+    },
+    {
+      "name": "Requirements Evaluator GUI",
+      "type": "python",
+      "request": "launch",
+      "program": "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\RequirementsEvaluator.py",
+      "console": "integratedTerminal",
+      "args": [
+        "--in",
+        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\input",
+        "--out",
+        "C:\\Users\\Joshua\\GIT\\_Masterarbeit\\Masterthesis-Data\\RequirementEvaluator\\output",
+        "--gui"
       ]
     }
   ]
