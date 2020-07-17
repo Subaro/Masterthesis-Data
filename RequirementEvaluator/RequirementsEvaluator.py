@@ -1281,6 +1281,8 @@ class RequirementEvaluator:
         # Extract list of uniques
         uniques = dataFrame[filterUnqiue].unique()
         filteredDataFrame = dataFrame[dataFrame[yaxis] != -1]
+        if(yaxis == "Sample Size"):
+            filteredDataFrame = filteredDataFrame[filteredDataFrame[yaxis] != 0]
 
         if self.isLogarithmicMode():
             plot.set_yscale('log')
