@@ -1249,6 +1249,12 @@ class RequirementEvaluator:
         # Extract list of uniques
         uniques = dataFrame[filterUnqiue].unique()
 
+        if self.isLogarithmicMode():
+            plot.set_yscale('log')
+            plot.set_ylabel('logarithmic scale')
+        if self.isGridMode():
+            plot.grid()
+
         colorIndex = 0
         for unique in uniques:
             # Create filtered data
@@ -1258,12 +1264,6 @@ class RequirementEvaluator:
             plot.scatter(filteredData[xaxis],
                          filteredData[yaxis], marker=t, s=45, color=scalarMap.to_rgba(colorIndex))
             colorIndex = colorIndex + 1
-
-        if self.isLogarithmicMode():
-            plot.set_yscale('log')
-            plot.set_ylabel('logarithmic scale')
-        if self.isGridMode():
-            plot.grid()
 
         plot.tick_params(axis='y',
                          direction='inout',
@@ -1280,24 +1280,27 @@ class RequirementEvaluator:
 
         # Extract list of uniques
         uniques = dataFrame[filterUnqiue].unique()
-
-        colorIndex = 0
-        for unique in uniques:
-            # Create filtered data
-            filteredData = dataFrame[(dataFrame[filterUnqiue] == unique)]
-            filteredData = filteredData[filteredData[yaxis] >= 0]
-            filteredData = dataFrame[(dataFrame[filterUnqiue] == unique)]
-            t = mpl.markers.MarkerStyle(marker='x')
-            t._transform = t.get_transform().rotate_deg((90/len(uniques)) * colorIndex)
-            plot.scatter(filteredData[xaxis],
-                         filteredData[yaxis], marker=t, s=45, color=scalarMap.to_rgba(colorIndex))
-            colorIndex = colorIndex + 1
+        filteredDataFrame = dataFrame[dataFrame[yaxis] != -1]
 
         if self.isLogarithmicMode():
             plot.set_yscale('log')
             plot.set_ylabel('logarithmic scale')
         if self.isGridMode():
             plot.grid()
+
+        colorIndex = 0
+        for unique in uniques:
+            # Create filtered data
+            filteredData = filteredDataFrame[(
+                filteredDataFrame[filterUnqiue] == unique)]
+            filteredData = filteredData[filteredData[yaxis] >= 0]
+            filteredData = filteredDataFrame[(
+                filteredDataFrame[filterUnqiue] == unique)]
+            t = mpl.markers.MarkerStyle(marker='x')
+            t._transform = t.get_transform().rotate_deg((90/len(uniques)) * colorIndex)
+            plot.scatter(filteredData[xaxis],
+                         filteredData[yaxis], marker=t, s=45, color=scalarMap.to_rgba(colorIndex))
+            colorIndex = colorIndex + 1
 
         plot.tick_params(axis='y',
                          direction='inout',
@@ -1315,6 +1318,12 @@ class RequirementEvaluator:
         # Extract list of uniques
         uniques = dataFrame[filterUnqiue].unique()
 
+        if self.isLogarithmicMode():
+            plot.set_yscale('log')
+            plot.set_ylabel('logarithmic scale')
+        if self.isGridMode():
+            plot.grid()
+
         colorIndex = 0
         for unique in uniques:
             filteredData = dataFrame[(
@@ -1323,12 +1332,6 @@ class RequirementEvaluator:
             plot.bar(colorIndex, vaules, label=unique,
                      color=scalarMap.to_rgba(colorIndex))
             colorIndex = colorIndex + 1
-
-        if self.isLogarithmicMode():
-            plot.set_yscale('log')
-            plot.set_ylabel('logarithmic scale')
-        if self.isGridMode():
-            plot.grid()
 
         plot.xaxis.set(ticks=range(0, len(uniques)),
                        ticklabels=uniques)
@@ -1381,8 +1384,9 @@ class RequirementEvaluator:
         plotName = self.labelPlotName.get("1.0", END).rstrip()
         plotName = plotName + '_' + result
         # plotName = str.replace("\n", "")TODO
-        file_path = os.path.join(os.path.join(
-            self.args.output, "plots"), plotName + extension)
+        file_path = os.path.join(self.args.output, "plots")
+        Path(file_path).mkdir(parents=True, exist_ok=True)
+        file_path = os.path.join(file_path, plotName + extension)
         return file_path
 
     def isExporting(self):
@@ -1886,7 +1890,7 @@ class RequirementEvaluator:
         self.setupContent_LeftToolFrame()
 
         # Load all data
-        self.data_importDataFromInputPath()
+        # self.data_importDataFromInputPath()
 
 
 # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # # #
