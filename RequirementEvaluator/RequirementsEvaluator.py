@@ -18,6 +18,7 @@ import matplotlib.cm as cmx
 import matplotlib as mpl
 import matplotlib.colors as colors
 import matplotlib.pyplot as plt
+import matplotlib.transforms as transforms
 import numpy as np
 import pandas as pd
 from matplotlib.backends.backend_pdf import PdfPages
@@ -429,13 +430,20 @@ class SamplingFrame:
             self.average.at[i, 'NBS Subscore Memory'] = self.average.at[i,
                                                                         'Avg. Normalized Memory']
             # Calculate Score
-            self.average.at[i, 'NBS'] = \
-                (prioritization.size * self.average.at[i, 'NBS Subscore Size']) + \
-                (prioritization.time * self.average.at[i, 'NBS Subscore Time']) + \
-                (prioritization.coverage * self.average.at[i, 'NBS Subscore Coverage']) + \
-                (prioritization.similarity * self.average.at[i, 'NBS Subscore Similarity']) + \
-                (prioritization.similarity *
-                 self.average.at[i, 'NBS Subscore Memory'])
+            NBS = (prioritization.size *
+                   self.average.at[i, 'NBS Subscore Size'])
+            NBS += (prioritization.time *
+                    self.average.at[i, 'NBS Subscore Time'])
+            NBS += (prioritization.coverage *
+                    self.average.at[i, 'NBS Subscore Coverage'])
+            if not (pd.isnull(self.average.at[i, 'NBS Subscore Memory'])):
+                NBS += (prioritization.memory *
+                        self.average.at[i, 'NBS Subscore Memory'])
+            if not (pd.isnull(self.average.at[i, 'NBS Subscore Similarity'])):
+                NBS += (prioritization.similarity *
+                        self.average.at[i, 'NBS Subscore Similarity'])
+            self.average.at[i, 'NBS'] = NBS
+
         # Determine ranks
         prioritizationFilter = self.average[self.average['Prioritization'] == str(
             prioritization)]
@@ -767,7 +775,7 @@ class RequirementEvaluator:
     listEvalList = Listbox
     labelPlotName = Text
     plotFrame = Frame
-    grayscaleMode, logarithmicMode, gridMode = IntVar, IntVar, IntVar
+    grayscaleMode, logarithmicMode, gridMode, avaragesMode, hideLegend = IntVar, IntVar, IntVar, IntVar, IntVar
     varWidth, varHeight, varDPI, varLeft, varTop, varBottom, varRight, varXSpace, varYSpace = DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar, DoubleVar
     overrideWidthHeight, overrideLeftRight, overrideTopBottom, overrideSpace = IntVar, IntVar, IntVar, IntVar
     # Data Variables
@@ -931,16 +939,34 @@ class RequirementEvaluator:
             scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=jet)
             scalarMap.get_clim()
 
+            SMALL_SIZE = 8
+            MEDIUM_SIZE = 10
+            BIGGER_SIZE = 12
+
+            # controls default text sizes
+            plt.rc('font', size=BIGGER_SIZE)
+            # fontsize of the axes title
+            plt.rc('axes', titlesize=BIGGER_SIZE)
+            # fontsize of the x and y labels
+            plt.rc('axes', labelsize=BIGGER_SIZE)
+            # fontsize of the tick labels
+            plt.rc('xtick', labelsize=BIGGER_SIZE)
+            # fontsize of the tick labels
+            plt.rc('ytick', labelsize=BIGGER_SIZE)
+            plt.rc('legend', fontsize=BIGGER_SIZE)    # legend fontsize
+            # fontsize of the figure title
+            plt.rc('figure', titlesize=BIGGER_SIZE)
+
             # Create scatter
             figure1 = None
             if(self.overrideWidthHeight.get() == 1):
                 figure1 = plt.Figure(
                     figsize=(int(self.varWidth.get()), int(self.varHeight.get())), dpi=int(self.varDPI.get()))
             else:
-                self.varWidth.set(7)
-                self.varHeight.set(6)
-                self.varDPI.set(100)
-                figure1 = plt.Figure(figsize=(7, 6), dpi=100)
+                self.varWidth.set(5)
+                self.varHeight.set(4)
+                self.varDPI.set(150)
+                figure1 = plt.Figure(figsize=(5, 4), dpi=150)
 
             plot = self.plot_createComparePlot(title, figure1, 111, self.samplingFrame.getData(
             ), 'Algorithm', xaxis, yaxis, scalarMap)
@@ -950,7 +976,7 @@ class RequirementEvaluator:
             else:
                 plot.set_ylabel(ytitle)
 
-            figure1.autofmt_xdate(rotation=70)
+            # figure1.autofmt_xdate(rotation=70)
             if(self.overrideLeftRight.get() == 1):
                 figure1.subplots_adjust(left=float(
                     self.varLeft.get()), right=float(self.varRight.get()))
@@ -964,7 +990,7 @@ class RequirementEvaluator:
                 figure1.subplots_adjust(top=float(
                     self.varTop.get()), bottom=float(self.varBottom.get()))
             else:
-                self.varTop.set(0.9)
+                self.varTop.set(0.99)
                 self.varBottom.set(0.13)
                 figure1.subplots_adjust(top=float(
                     self.varTop.get()), bottom=float(self.varBottom.get()))
@@ -1268,7 +1294,8 @@ class RequirementEvaluator:
         plot.tick_params(axis='y',
                          direction='inout',
                          length=10)
-        plot.legend(uniques)
+        if not self.isHideLegend():
+            plot.legend(uniques)
         plot.set_xlabel(xaxis)
         plot.set_title(title)
         return plot
@@ -1289,13 +1316,11 @@ class RequirementEvaluator:
             plot.set_ylabel('logarithmic scale')
         if self.isGridMode():
             plot.grid()
+            plot.set_axisbelow(True)
 
         colorIndex = 0
         for unique in uniques:
             # Create filtered data
-            filteredData = filteredDataFrame[(
-                filteredDataFrame[filterUnqiue] == unique)]
-            filteredData = filteredData[filteredData[yaxis] >= 0]
             filteredData = filteredDataFrame[(
                 filteredDataFrame[filterUnqiue] == unique)]
             t = mpl.markers.MarkerStyle(marker='x')
@@ -1307,9 +1332,25 @@ class RequirementEvaluator:
         plot.tick_params(axis='y',
                          direction='inout',
                          length=10)
-        plot.legend(uniques)
+        if not self.isHideLegend():
+            plot.legend(uniques)
         plot.set_xlabel(xaxis)
         plot.set_title(title)
+
+        if self.isAverageModus():
+            colorIndex = 0
+            for unique in uniques:
+                # Create filtered data
+                filteredData = filteredDataFrame[(
+                    filteredDataFrame[filterUnqiue] == unique)]
+                mean = filteredData[yaxis].mean()
+                plot.axhline(mean, color=scalarMap.to_rgba(
+                    colorIndex), ls=':', label=None)
+                trans = transforms.blended_transform_factory(
+                    plot.get_yticklabels()[0].get_transform(), plot.transData)
+                plot.text(0, mean, "{:.0f}".format(mean), color=scalarMap.to_rgba(
+                    colorIndex), transform=trans, ha="right", va="center")
+                colorIndex = colorIndex + 1
         return plot
 
     def plot_createBarPlot(self, title, figure, subplotID, dataFrame, filterUnqiue, xaxis, yaxis, scalarMap):
@@ -1341,7 +1382,8 @@ class RequirementEvaluator:
                          direction='inout',
                          length=10)
         plot.set_title(title + "\n" + str(dataFrame[xaxis].values.tolist()[0]))
-        plot.legend(uniques)
+        if not self.isHideLegend():
+            plot.legend(uniques)
 
         figure.autofmt_xdate(rotation=70)
 
@@ -1403,6 +1445,12 @@ class RequirementEvaluator:
 
     def isGridMode(self):
         return self.gridMode.get() == 1
+
+    def isAverageModus(self):
+        return self.avaragesMode.get() == 1
+
+    def isHideLegend(self):
+        return self.hideLegend.get() == 1
 
     def data_importDataFromInputPath(self):
         ''' Import all data from the input path. '''
@@ -1739,6 +1787,18 @@ class RequirementEvaluator:
         gridModeButton = Checkbutton(
             plotOptionFrame, text="Draw Grid", variable=self.gridMode)
         gridModeButton.grid(row=row, columnspan=4, sticky="wens")
+        row += 1
+
+        self.avaragesMode = IntVar()
+        avaragesModeButton = Checkbutton(
+            plotOptionFrame, text="Draw Averages", variable=self.avaragesMode)
+        avaragesModeButton.grid(row=row, columnspan=4, sticky="wens")
+        row += 1
+
+        self.hideLegend = IntVar()
+        hideLegendButton = Checkbutton(
+            plotOptionFrame, text="Hide Legend", variable=self.hideLegend)
+        hideLegendButton.grid(row=row, columnspan=4, sticky="wens")
         row += 1
 
         # Figure Size
